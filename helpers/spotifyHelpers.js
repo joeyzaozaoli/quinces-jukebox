@@ -15,6 +15,9 @@ const searchAuthOptions = {
   json: true
 };
 
+
+
+//use Spotify API credentials to get search results without needing to use Oauth
 exports.getTrackSearchResults = (queryString) => {
   return new Promise((resolve, reject) => {
     request.post(searchAuthOptions, (error, response, body) => {
@@ -36,6 +39,7 @@ exports.getTrackSearchResults = (queryString) => {
   });
 };
 
+//used for checking state of browser for authentication
 const generateRandomString = (length) => {
   let text = '';
   const possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
@@ -82,7 +86,6 @@ exports.redirectAfterLogin = (req, res) => {
   };
 
   //make a new request to spotify API and provide the authorization code in exchange for a token
-
   request.post(playerAuthOptions, function(error, response, body) {
     if (!error && response.statusCode === 200) {
 
