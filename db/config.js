@@ -7,7 +7,7 @@ mongoose.connection
         console.log('Successfully connected');
     })
     .on('error', (error) => {
-        console.warn('Warning', error);
+        console.warn('Connection error', error);
     });
 
 module.exports = mongoose;

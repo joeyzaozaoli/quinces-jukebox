@@ -1,10 +1,9 @@
 // *** Express ***
 const express = require('express');
 const app = express();
-const cors = require('cors');
-const env = require('./env/credentials.js')
 
 // *** Webpack ***
+const env = require('./env/credentials.js');
 const webpackDevMiddleware = require('webpack-dev-middleware');
 const webpack = require('webpack');
 const webpackConfig = require(`./webpack.config${env.prod ? '.prod' : ''}.js`);
@@ -21,11 +20,9 @@ if (!env.prod) {
     historyApiFallback: true,
   }));
 }
-app.use(cors());
 
 // *** Static Assets ***
 app.use(express.static(__dirname + '/public'));
-
 
 // *** Database ***
 const User = require('./db/user');
@@ -64,7 +61,6 @@ app.get('/songs', (req, res) => {
 app.get('/songs/search', (req, res) => {
   spotifyHelpers.getTrackSearchResults(req.query.query)
   .then((results) => {
-    console.log(results.tracks.items[0].album.images[1])
       res.json(results);
     });
 });
@@ -92,7 +88,7 @@ app.post('/songs', (req, res) => {
   });
 });
 
-// update vote on both songs collection and users collection
+// update vote on songs collection
 app.put('/song', (req, res) => {
   Song.findOne({name: req.body.name})
   .then(function(song) {
@@ -108,14 +104,21 @@ app.put('/song', (req, res) => {
   });
 });
 
+// delete song from songs collection
 app.delete('/song', (req, res) => {
   const songId = req.query.id;
   Song.remove({'_id': songId}, (err) => {
-    if (err) {
-      console.log(err);
-    }
+    if (err) { console.log(err); }
   });
-  res.send('succesfully removed');
+  res.sendStatus(201);
+});
+
+// fetch all users from users collection and send to client
+app.get('/users', (req,res) => {
+  User.find({})
+  .then((users) => {
+    res.json(users);
+  });
 });
 
 // add user to users collection
@@ -137,16 +140,6 @@ app.post('/signup', (req, res) => {
     }
   });
 });
-
-app.get('/users', (req,res) => {
-  User.find({})
-  .then((users) => {
-    res.json(users);
-  });
-})
-
-// POST at /login
-// GET at /logout
 
 // Host Authentication
 app.get('/hostLogin', (req, res) => {
