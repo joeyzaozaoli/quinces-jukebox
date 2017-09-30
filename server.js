@@ -67,7 +67,6 @@ app.get('/songs/search', (req, res) => {
 
 // add song to both user collection and songs collection
 app.post('/songs', (req, res) => {
-  console.log(req.body);
   var newSong = new Song({
     name: req.body.name,
     image: req.body.image,
@@ -143,12 +142,10 @@ app.post('/signup', (req, res) => {
 
 // Host Authentication
 app.get('/hostLogin', (req, res) => {
-  console.log('logging in host');
   spotifyHelpers.handleHostLogin(req, res);
 });
 
 app.get('/callback', (req, res) => {
-  console.log('redirecting');
   spotifyHelpers.redirectAfterLogin(req, res);
 });
 
