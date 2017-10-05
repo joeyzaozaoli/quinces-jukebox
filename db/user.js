@@ -11,12 +11,11 @@ const UserSchema = new Schema({
 
 const User = mongoose.model('user', UserSchema);
 
-// dummy data
+// dummy data; do NOT delete the anonymous user
+new User({name: 'anonymous'}).save();
 new User({name: 'jessica'}).save();
 new User({name: 'nick'}).save();
 new User({name: 'vasanth'}).save();
 new User({name: 'joey'}).save();
-// do NOT delete the anonymous user
-new User({name: 'anonymous'}).save();
 
 module.exports = User;
