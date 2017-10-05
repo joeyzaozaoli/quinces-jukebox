@@ -62,7 +62,6 @@ environment to function correctly
 ### Installing Dependencies
 
 From within the root directory:
-
 ```sh
 npm install
 ```
