@@ -62,7 +62,6 @@ environment to function correctly
 ### Installing Dependencies
 
 From within the root directory:
-
 ```sh
 npm install
 ```
@@ -76,6 +75,7 @@ mongod
 
 From within the root directory:
 ```sh
+node db/dummy_data.js
 nodemon server.js
 ```
 

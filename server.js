@@ -25,8 +25,8 @@ if (!env.prod) {
 app.use(express.static(__dirname + '/public'));
 
 // *** Database ***
-const User = require('./db/user');
-const Song = require('./db/song');
+const Song = require('./db/config').Song;
+const User = require('./db/config').User;
 
 // *** Parser ***
 const bodyParser = require('body-parser');
