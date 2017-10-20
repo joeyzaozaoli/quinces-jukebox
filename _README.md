@@ -75,6 +75,7 @@ mongod
 
 From within the root directory:
 ```sh
+node db/dummy_data.js
 nodemon server.js
 ```
 
