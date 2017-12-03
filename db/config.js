@@ -1,4 +1,3 @@
-// *** Connection ***
 const mongoose = require('mongoose');
 mongoose.Promise = require('bluebird');
 mongoose.connect('mongodb://localhost/quince');
@@ -11,7 +10,10 @@ mongoose.connection
     console.log('Connection error');
   });
 
-// *** Song Schema ***
+/* * * * * * * * * * * * * * * * * * * * * * * * * * *
+  Schema
+* * * * * * * * * * * * * * * * * * * * * * * * * * */
+
 const Schema = mongoose.Schema;
 
 const SongSchema = new Schema({
@@ -30,14 +32,16 @@ SongSchema.pre('save', function(next) {
   next();
 });
 
-// *** User Schema ***
 const UserSchema = new Schema({
   name: String,
   addedSongs: Array,
   votedSongs: Array
 });
 
-// *** Models ***
+/* * * * * * * * * * * * * * * * * * * * * * * * * * *
+  Models
+* * * * * * * * * * * * * * * * * * * * * * * * * * */
+
 const Song = mongoose.model('song', SongSchema);
 const User = mongoose.model('user', UserSchema);
 

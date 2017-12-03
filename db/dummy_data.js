@@ -1,8 +1,6 @@
-// *** Database ***
 const Song = require('./config').Song;
 const User = require('./config').User;
 
-// *** Dummy Data ***
 new Song({name: 'Purple Rain', artist: 'Prince',
   image: 'https://i.scdn.co/image/8b171c29fa2d68816b23a9166b5354fbe0db3b1a',
   link: 'https://open.spotify.com/track/54X78diSLoUDI3joC2bjMz',
