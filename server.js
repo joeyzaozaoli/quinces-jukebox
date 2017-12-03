@@ -1,8 +1,18 @@
-// *** Express ***
 const express = require('express');
+const bodyParser = require('body-parser');
+const cookieParser = require('cookie-parser');
+const session = require('express-session');
+
+const Song = require('./db/config').Song;
+const User = require('./db/config').User;
+const spotifyHelpers = require('./helpers/spotifyHelpers.js');
+
 const app = express();
 
-// *** Webpack ***
+/* * * * * * * * * * * * * * * * * * * * * * * * * * *
+  Webpack
+* * * * * * * * * * * * * * * * * * * * * * * * * * */
+
 const env = require('./env/credentials.js');
 const webpackDevMiddleware = require('webpack-dev-middleware');
 const webpack = require('webpack');
@@ -11,45 +21,36 @@ const compiler = webpack(webpackConfig);
 
 if (!env.prod) {
   app.use(webpackDevMiddleware(compiler, {
-    hot: true,
-    filename: 'bundle.js',
-    publicPath: '/',
-    stats: {
-    colors: true,
+      hot: true,
+      filename: 'bundle.js',
+      publicPath: '/',
+      stats: {
+      colors: true,
     },
     historyApiFallback: true,
   }));
 }
 
-// *** Static Assets ***
+/* * * * * * * * * * * * * * * * * * * * * * * * * * *
+  Middleware
+* * * * * * * * * * * * * * * * * * * * * * * * * * */
+
 app.use(express.static(__dirname + '/public'));
 
-// *** Database ***
-const Song = require('./db/config').Song;
-const User = require('./db/config').User;
-
-// *** Parser ***
-const bodyParser = require('body-parser');
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
-const cookieParser = require('cookie-parser');
 app.use(cookieParser());
-const querystring = require('querystring');
 
-// *** Session ***
-var session = require('express-session');
 app.use(session({
   secret: 'keyboard cat',
   resave: false,
   saveUninitialized: true
 }));
 
-// *** Helper ***
-const spotifyHelpers = require('./helpers/spotifyHelpers.js');
+/* * * * * * * * * * * * * * * * * * * * * * * * * * *
+  Router
+* * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-// *** Routes ***
-
-// fetch top 50 songs by netVoteCount from songs collection and send to client
 app.get('/songs', (req, res) => {
   Song.find({}).sort({netVoteCount: 'descending'}).limit(50)
   .then((songs) => {
@@ -57,23 +58,22 @@ app.get('/songs', (req, res) => {
   });
 });
 
-// fetch song research results and send to client
 app.get('/songs/search', (req, res) => {
   spotifyHelpers.getTrackSearchResults(req.query.query)
-  .then((results) => {
-      res.json(results);
+  .then((songs) => {
+      res.json(songs);
     });
 });
 
-// add song to both user collection and songs collection
 app.post('/songs', (req, res) => {
-  var newSong = new Song({
+  const newSong = new Song({
     name: req.body.name,
     image: req.body.image,
     link: req.body.link,
     userName: req.body.userName,
     artist: req.body.artist
   });
+
   User.findOne({name: req.body.userName})
   .then((user) => {
     if (user) {
@@ -87,10 +87,9 @@ app.post('/songs', (req, res) => {
   });
 });
 
-// update vote on songs collection
 app.put('/song', (req, res) => {
   Song.findOne({name: req.body.name})
-  .then(function(song) {
+  .then((song) => {
     if (song) {
       if(req.body.vote > 0) {
         song.upVoteCount++;
@@ -103,16 +102,14 @@ app.put('/song', (req, res) => {
   });
 });
 
-// delete song from songs collection
 app.delete('/song', (req, res) => {
   const songId = req.query.id;
-  Song.remove({'_id': songId}, (err) => {
-    if (err) { console.log(err); }
+  Song.remove({'_id': songId})
+  .then(() => {
+    res.sendStatus(201);
   });
-  res.sendStatus(201);
 });
 
-// fetch all users from users collection and send to client
 app.get('/users', (req,res) => {
   User.find({})
   .then((users) => {
@@ -120,9 +117,8 @@ app.get('/users', (req,res) => {
   });
 });
 
-// add user to users collection
 app.post('/signup', (req, res) => {
-  var newUser = new User({
+  const newUser = new User({
     name: req.body.username
   });
 
@@ -140,21 +136,22 @@ app.post('/signup', (req, res) => {
   });
 });
 
-// Host Authentication
-app.get('/hostLogin', (req, res) => {
+app.get('/hostLogin', (req, res) => { // host authentication
   spotifyHelpers.handleHostLogin(req, res);
 });
 
-app.get('/callback', (req, res) => {
+app.get('/callback', (req, res) => { // host authentication
   spotifyHelpers.redirectAfterLogin(req, res);
 });
 
-// send 404 to client
 app.get('/*', (req, res) => {
   res.status(404).send('Not Found');
 });
 
-// *** Server ***
+/* * * * * * * * * * * * * * * * * * * * * * * * * * *
+  Server
+* * * * * * * * * * * * * * * * * * * * * * * * * * */
+
 const server = app.listen(3000, () => {
   console.log('Listening at http://localhost:3000');
 });

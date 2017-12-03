@@ -27,7 +27,7 @@ const SongSchema = new Schema({
   netVoteCount: Number
 });
 
-SongSchema.pre('save', function(next) {
+SongSchema.pre('save', function(next) { // Do NOT change to arrow function
   this.netVoteCount = this.upVoteCount - this.downVoteCount;
   next();
 });
