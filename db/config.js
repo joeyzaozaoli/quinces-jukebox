@@ -42,10 +42,6 @@ const UserSchema = new Schema({
   Models
 * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-const Song = mongoose.model('song', SongSchema);
-const User = mongoose.model('user', UserSchema);
+module.exports.Song = mongoose.model('song', SongSchema);
+module.exports.User = mongoose.model('user', UserSchema);
 
-module.exports = {
-  Song: Song,
-  User: User
-};
